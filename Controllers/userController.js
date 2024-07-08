@@ -7,12 +7,10 @@ export const referral = async (req, res) => {
     try {
         const { username, email, contact, refName, refEmail, refContact, relation } = req.body;
 
-        // Check if all fields are provided
         if (!username || !email || !contact || !refName || !refEmail || !refContact || !relation) {
             return res.status(400).json({ message: 'All fields are required' });
         }
 
-        // Save new user to the database
         const newUser = new User({
             username,
             email,
@@ -24,7 +22,6 @@ export const referral = async (req, res) => {
         });
         await newUser.save();
 
-        // Set up nodemailer transport
         const transporter = nodemailer.createTransport({
             service: "Gmail",
             auth: {
@@ -33,7 +30,6 @@ export const referral = async (req, res) => {
             }
         });
 
-        // Mail options
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: refEmail,
@@ -41,7 +37,6 @@ export const referral = async (req, res) => {
             text: 'You have been referred to our program!',
         };
 
-        // Send email
         await transporter.sendMail(mailOptions);
         res.status(200).json({ message: 'Details submitted and referral email sent successfully' });
 
